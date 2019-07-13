@@ -222,6 +222,10 @@ class ChaptersPagerActivity : BaseActivity(), ActionMode.Callback {
                 return true
             }
             item?.itemId == R.id.action_download -> {
+                if (dataCenter.lockWuxiaDownloads && isWuxiaWorldNovel()) {
+                    showWuxiaDialog()
+                    return false
+                }
                 confirmDialog(getString(R.string.download_all_chapters_dialog_content), MaterialDialog.SingleButtonCallback { dialog, _ ->
                     addWebPagesToDownload()
                     dialog.dismiss()
@@ -306,6 +310,10 @@ class ChaptersPagerActivity : BaseActivity(), ActionMode.Callback {
                 })
             }
             R.id.action_download -> {
+                if (dataCenter.lockWuxiaDownloads && isWuxiaWorldNovel()) {
+                    showWuxiaDialog()
+                    return false
+                }
                 confirmDialog(getString(R.string.download_chapters_dialog_content), MaterialDialog.SingleButtonCallback { dialog, _ ->
                     if (novel.id == -1L) {
                         showNotInLibraryDialog()
@@ -510,5 +518,23 @@ class ChaptersPagerActivity : BaseActivity(), ActionMode.Callback {
         }
     }
 
+    private fun isWuxiaWorldNovel(): Boolean {
+        val metadata = this.novel.metaData
+        val epublisher = metadata["English Publisher"] ?: ""
+        val opublisher = metadata["Original Publisher"] ?: ""
+        return epublisher.contains("wuxiaworld") || opublisher.contains("wuxiaworld")
+    }
+
+    private fun showWuxiaDialog() {
+        MaterialDialog.Builder(this)
+                .iconRes(R.drawable.ic_info_white_vector)
+                .title("Wuxiaworld Downloads!!")
+                .content("Wuxiaworld has requested not to allow downloads for their novels. You can use their app and sign up for VIP service to get this feature. Sorry for the inconvenience!!")
+//                .positiveText(getString(R.string.take_me_there))
+                .negativeText(getString(R.string.okay))
+//                .onPositive { dialog, _ -> dialog.dismiss(); setResult(Constants.OPEN_DOWNLOADS_RES_CODE); finish() }
+                .onNegative { dialog, _ -> dialog.dismiss() }
+                .show()
+    }
 
 }

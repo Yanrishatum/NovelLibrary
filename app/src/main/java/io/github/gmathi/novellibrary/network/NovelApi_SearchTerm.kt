@@ -1,14 +1,13 @@
 package io.github.gmathi.novellibrary.network
 
 import io.github.gmathi.novellibrary.model.Novel
-import io.github.gmathi.novellibrary.util.addPageNumberToUrl
 
 
 fun NovelApi.searchRoyalRoad(searchTerms: String, pageNumber: Int = 1): ArrayList<Novel>? {
     var searchResults: ArrayList<Novel>? = null
     try {
         searchResults = ArrayList()
-        val document = getDocumentWithUserAgent("https://www.royalroad.com/fictions/search?keyword=${searchTerms.replace(" ", "+")}&page=$pageNumber")
+        val document = getDocumentWithUserAgent("https://www.royalroad.com/fictions/search?name=${searchTerms.replace(" ", "+")}&page=$pageNumber")
         val elements = document.body().select("li.search-item") ?: return searchResults
         for (element in elements) {
             val urlElement = element.selectFirst("a[href]") ?: continue
@@ -28,36 +27,6 @@ fun NovelApi.searchRoyalRoad(searchTerms: String, pageNumber: Int = 1): ArrayLis
 }
 
 fun NovelApi.searchNovelUpdates(searchTerms: String, pageNumber: Int = 1): ArrayList<Novel>? {
-    var searchResults: ArrayList<Novel>? = null
-    try {
-        searchResults = ArrayList()
-        val document = getDocumentWithUserAgent("https://www.novelupdates.com/page/$pageNumber/?s=${searchTerms.replace(" ", "+")}")
-        val titleElements = document.body().select("h2.w-blog-entry-title") ?: return searchResults
-        val dataElements = document.body().select("div.w-blog-entry") ?: return searchResults
-
-        (0 until dataElements.size).forEach { i ->
-
-            val novelName = titleElements[i].selectFirst("span.w-blog-entry-title-h")?.text()
-                    ?: return@forEach
-            val novelUrl = titleElements[i].selectFirst("a[href]")?.attr("abs:href")
-                    ?: return@forEach
-            val novel = Novel(novelName, novelUrl)
-
-            novel.imageUrl = dataElements[i].selectFirst("img[src]")?.attr("abs:src")
-            novel.rating = dataElements[i].selectFirst("span.userrate")?.text()?.replace("Rating: ", "")?.trim()
-            novel.genres = dataElements[i].selectFirst("span.s-genre")?.children()?.map { it.text() }
-            novel.shortDescription = dataElements[i].selectFirst("div.w-blog-entry-short")?.textNodes()?.get(0)?.text()
-            novel.longDescription = dataElements[i].selectFirst("span[style=display:none]")?.textNodes()?.map { it.text() }?.joinToString(separator = "\n") { it }
-            searchResults.add(novel)
-        }
-
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-    return searchResults
-}
-
-fun NovelApi.searchNovelUpdates_New(searchTerms: String, pageNumber: Int = 1): ArrayList<Novel>? {
     var searchResults: ArrayList<Novel>? = null
     try {
         searchResults = ArrayList()

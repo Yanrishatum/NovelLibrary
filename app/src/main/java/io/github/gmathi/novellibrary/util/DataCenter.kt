@@ -17,6 +17,7 @@ class DataCenter(context: Context) {
         private const val LOCK_ROYAL_ROAD = "lockRoyalRoad"
         private const val LOCK_NOVEL_FULL = "lockNovelFull"
         private const val LOCK_SCRIBBLE = "lockScribble"
+        private const val LOCK_WUXIA_DOWNLOADS = "lockWuxiaDownloads"
 
         private const val SEARCH_HISTORY_LIST = "searchHistoryList"
         private const val NOVEL_HISTORY_LIST = "novelHistoryList"
@@ -74,6 +75,10 @@ class DataCenter(context: Context) {
     var lockScribble: Boolean
         get() = prefs.getBoolean(LOCK_SCRIBBLE, true)
         set(value) = prefs.edit().putBoolean(LOCK_SCRIBBLE, value).apply()
+
+    var lockWuxiaDownloads: Boolean
+        get() = prefs.getBoolean(LOCK_WUXIA_DOWNLOADS, true)
+        set(value) = prefs.edit().putBoolean(LOCK_WUXIA_DOWNLOADS, value).apply()
 
     var isDarkTheme: Boolean
         get() = prefs.getBoolean(IS_DARK_THEME, true)
